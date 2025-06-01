@@ -7,11 +7,36 @@ A collection of snippets that get the phase of the moon, currently, the implemen
 * C/C++
 * Lua
 * Zig
+* Python
 
 These functions take a time as an input (usually in unix epoch seconds or the languages official way of doing time),
 and return the "age" of the moon in radians, such that `(1-cos(x))/2` returns the illuminated fraction of the moons
 surface, this indirection is needed because across a full cycle, the same illuminated percent appears more than once,
 the first and third quarter are a good example.
+
+When the age of the moon is converted into a range between `[0,1]`. You can then get the age
+of the moon in days by multiplying it by ~29.5.
+
+You can also get the "index" of the phase, required for the phase name and emoji, with
+the illuminated fraction and the angle. As an example, here's [some rust code](https://github.com/oliverkwebb/deskephem/blob/main/src/value.rs#L70)
+for a different tool using the same algorithm:
+
+```rust
+fn phaseidx(ilumfrac: f64, ang: time::Angle) -> usize {
+    match (ilumfrac, ang.degrees() > 90.0) {
+        (0.00..0.04, _) => 0,
+        (0.96..1.00, _) => 4,
+        (0.46..0.54, true) => 6,
+        (0.46..0.54, false) => 2,
+        (0.54..0.96, true) => 5,
+        (0.54..0.96, false) => 3,
+        (_, true) => 7,
+        (_, false) => 1,
+    }
+}
+```
+
+(Note that your angle has to be converted to a positive angle with `a-360.0*(floor(a/360))` or some similar modulo [(not remainder)](https://www.man7.org/linux/man-pages/man3/fmod.3.html) operation)
 
 All these snippets are based off the algorithm in `moontool`, a GUI program made in the 80s
 by John Walker, which based its algorithms off the book *Practical Astronomy With Your Calculator*.
