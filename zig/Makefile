@@ -1,2 +1,2 @@
 all:
-	zig test src/main.zig
+	zig test moonphase.zig

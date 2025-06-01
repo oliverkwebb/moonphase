@@ -37,7 +37,7 @@ mod tests {
     use super::*;
 
     fn illumfrac(d: f64) -> f64 {
-    	((1.0-d.cos())/2.0)*100.0
+        ((1.0 - d.cos()) / 2.0) * 100.0
     }
 
     #[test]

@@ -1,6 +1,6 @@
 # moonphase - Werewolf Early Warning System
 
-This repo is a collection of snippets of code that get the phase of the moon, currently, the implementations are:
+A collection of snippets that get the phase of the moon, currently, the implementations are:
 
 * Rust
 * JavaScript
@@ -14,7 +14,7 @@ surface, this indirection is needed because across a full cycle, the same illumi
 the first and third quarter are a good example.
 
 All these snippets are based off the algorithm in `moontool`, a GUI program made in the 80s
-by John Walker, which took its algorithms from the book *Practical Astronomy With Your Calculator*.
+by John Walker, which based its algorithms off the book *Practical Astronomy With Your Calculator*.
 
 This project contains directories for each language, to run the test suite for any language,
 go inside that languages folder and run `make`.
