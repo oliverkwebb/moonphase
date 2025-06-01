@@ -1,0 +1,46 @@
+/* Works on any posix BC impl
+   
+   Because POSIX bc is terrible, this is the most code-golfed impl
+*/
+/* Adapted from "moontool.c" by John Walker: See
+ * http://www.fourmilab.ch/moontool/ */
+
+define f(a) {
+	auto s, b;
+	b = a / 360
+	s = scale
+	scale = 0
+	b /= 1
+	scale = s
+	return(a-360.0*(b))
+}
+define p(u) {
+  auto r, b, g, i, k, m, n, t, o, p, d, h, q;
+  q = (4*a(1)) / 180.0;
+
+  /* Calculation of the Sun's position */
+  d = (u / 86400 + 2440587.5) - 2444238.5; /* Date within epoch */
+  g = q * f(((360 / 365.2422) * d) + 278.833540 -  282.596403); /* Convert from perigee co-ordinates to epoch 1980.0 */
+
+  /* Solve equation of Kepler */
+  p = g;
+  t = p - 0.016718 * s(p) - g;
+  p -= t / (1 - 0.016718 * c(p));
+  while (t > 1E-6) {
+    if (t < -1E-6) {
+	break;
+    }
+    t = p - 0.016718 * s(p) - g;
+    p -= t / (1 - 0.016718 * c(p));
+  }
+  o = p;
+  o = 2 * a(sqrt((1 + 0.016718) / (1 - 0.016718)) * (s(o / 2)/c(o / 2))); /* True anomaly */
+  h = f(o * (180.0 / (4*a(1))) + 282.596403) /* Sun's geocentric ecliptic longitude */
+  i = f(13.1763966 * d + 64.975464) /* Moon's mean lonigitude at the epoch */
+  k = f(i - 0.1114041 * d - 349.383063) /* 349:  Mean longitude of the perigee at the epoch */     /* Moon's mean anomaly */
+  b = 1.2739 * s(q * (2 * (i - h) - k)); /* Evection */
+  m = q * (k + b - (0.1858 * s(g)) - (0.37 * s(g))); /* Corrected anomaly */
+  n = i + b + (6.2886 * s(m)) - (0.1858 * s(g)) + (0.214 * s(2 * m)); /* Corrected longitude */
+
+  return((n + (0.6583 * s(q * (2 * (n - h)))) - h) * q);
+}

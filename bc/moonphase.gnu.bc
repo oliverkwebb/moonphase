@@ -1,0 +1,43 @@
+/* This should work on GNU bc and GDH bc with the std lib -l flag */
+/* Adapted from "moontool.c" by John Walker: See
+ * http://www.fourmilab.ch/moontool/ */
+
+define f(a) {
+	auto s, b;
+	b = a / 360
+	s = scale
+	scale = 0
+	b /= 1
+	scale = s
+	return(a-360.0*(b))
+}
+
+define moonphase(d) {
+  auto r, ev, mm, lambdasun, ml, mmm, ae, mmp, lp, lpp, delta, ec, ee, day;
+  torad = (4*a(1)) / 180.0;
+
+  /* Calculation of the Sun's position */
+  day = (d / 86400 + 2440587.5) - 2444238.5; /* Date within epoch */
+  mm = torad * f(((360 / 365.2422) * day) + 278.833540 -  282.596403); /* Convert from perigee co-ordinates to epoch 1980.0 */
+
+  /* Solve equation of Kepler */
+  ee = mm;
+  delta = ee - 0.016718 * s(ee) - mm;
+  ee -= delta / (1 - 0.016718 * c(ee));
+  while (delta > 1E-6 || delta < -1E-6) {
+    delta = ee - 0.016718 * s(ee) - mm;
+    ee -= delta / (1 - 0.016718 * c(ee));
+  }
+  ec = ee;
+  ec = 2 * a(sqrt((1 + 0.016718) / (1 - 0.016718)) * (s(ec / 2)/c(ec / 2))); /* True anomaly */
+  lambdasun = f(ec * (180.0 / (4*a(1))) +  282.596403) /* Sun's geocentric ecliptic longitude */
+  ml = f(13.1763966 * day + 64.975464) /* Moon's mean lonigitude at the epoch */
+  mmm = f(ml - 0.1114041 * day - 349.383063) /* 349:  Mean longitude of the perigee at the epoch */     /* Moon's mean anomaly */
+  ev = 1.2739 * s(torad * (2 * (ml - lambdasun) - mmm)); /* Evection */
+  ae = 0.1858 * s(mm);                           /* Annual equation */
+  mmp = torad * (mmm + ev - ae - (0.37 * s(mm))); /* Corrected anomaly */
+  lp = ml + ev + (6.2886 * s(mmp)) - ae + (0.214 * s(2 * mmp)); /* Corrected longitude */
+  lpp = lp + (0.6583 * s(torad * (2 * (lp - lambdasun)))); /* True longitude */
+
+  return((lpp - lambdasun) * torad);
+}

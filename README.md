@@ -2,17 +2,26 @@
 
 A collection of snippets that get the phase of the moon, currently, the implementations are:
 
-* Rust
-* JavaScript
+Systems Level Languages:
 * C/C++
-* Lua
+* Rust
 * Zig
+
+Scripting Languages:
+* Lua
+* JavaScript
 * Python
+
+DSLs:
+* awk
+* [bc](https://en.wikipedia.org/wiki/Bc_(programming_language))
 
 These functions take a time as an input (usually in unix epoch seconds or the languages official way of doing time),
 and return the "age" of the moon in radians, such that `(1-cos(x))/2` returns the illuminated fraction of the moons
 surface, this indirection is needed because across a full cycle, the same illuminated percent appears more than once,
 the first and third quarter are a good example.
+
+All implementations contain test cases showing how to get the illuminated fraction and percent using the code.
 
 When the age of the moon is converted into a range between `[0,1]`. You can then get the age
 of the moon in days by multiplying it by ~29.5.
@@ -41,12 +50,11 @@ fn phaseidx(ilumfrac: f64, ang: time::Angle) -> usize {
 All these snippets are based off the algorithm in `moontool`, a GUI program made in the 80s
 by John Walker, which based its algorithms off the book *Practical Astronomy With Your Calculator*.
 
-This project contains directories for each language, to run the test suite for any language,
-go inside that languages folder and run `make`.
-
 ---
 
 # Rules for submission of [Favorite Language Here]
+
+These rules may be bent for microlanguages and DSLs.
 
 ## The Copy and Paste Rule
 
@@ -54,3 +62,4 @@ Your function must be self-contained, such that someone could copy-paste
 it into their code and not get an error. It also must not effect the
 environment outside it if at all possible (no `#define` or mutating globals).
 It must be as "pure" and self-contained as the language will allow.
+
