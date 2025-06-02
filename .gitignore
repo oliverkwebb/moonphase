@@ -3,3 +3,5 @@
 /zig/.zig-cache/
 /python/__pycache__
 /c/frontend
+.precomp/
+.DS_Store
