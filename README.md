@@ -9,6 +9,7 @@ Systems Level Languages:
 
 Scripting Languages:
 * Lua
+* Janet
 * JavaScript
 * Python
 * Raku
