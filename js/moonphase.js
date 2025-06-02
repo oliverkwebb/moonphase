@@ -4,7 +4,7 @@ function moonphase(ud) {
     var elonge = 278.833540; // Ecliptic longitude of the Sun at epoch 1980.0
     var elongp = 282.596403; // Ecliptic longitude of the Sun at perigee
     var torad = Math.PI / 180.0;
-    var fixangle = function (a) { return ((a % 360) + 360) % 360; };
+    const fixangle = a => ((a % 360) + 360) % 360;
     // Calculation of the Sun's position
     var Day = (ud / 86400 + 2440587.5) - 2444238.5; // Date within epoch
     var M = torad * fixangle(((360 / 365.2422) * Day) + elonge - elongp); // Convert from perigee co-ordinates to epoch 1980.0
