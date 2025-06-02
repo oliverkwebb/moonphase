@@ -1,4 +1,5 @@
-// I want this stuff as C-c C-v able as possible, no boilerplate
+
+// I want this stuff as Copy-Pastable as possible, no boilerplate in the main files if the language can help it
 
 module.exports = {
 	moonphase: moonphase
