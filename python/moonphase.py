@@ -6,30 +6,30 @@ def moonphase(date):
   elonge = 278.833540 # Ecliptic longitude of the Sun at epoch 1980.0
   elongp = 282.596403 # Ecliptic longitude of the Sun at perigee
   torad = math.pi / 180.0
-  fixangle = (lambda a: ((a % 360) + 360) % 360)
+  fixangle = lambda a: ((a % 360) + 360) % 360
 
   # Calculation of the Sun's position
-  Day = (ud / 86400 + 2440587.5) - 2444238.5 # Date within epoch
-  M = torad * fixangle(((360 / 365.2422) * Day) + elonge - elongp) # Convert from perigee co-ordinates to epoch 1980.0
+  day = (ud / 86400 + 2440587.5) - 2444238.5 # Date within epoch
+  m = torad * fixangle(((360 / 365.2422) * day) + elonge - elongp) # Convert from perigee co-ordinates to epoch 1980.0
 
   # Solve equation of Kepler
-  e = M
-  delta = e - eccent * math.sin(e) - M
+  e = m
+  delta = e - eccent * math.sin(e) - m
   e = e - delta / (1 - eccent * math.cos(e))
-  while (abs(delta) > 1E-6):
-    delta = e - eccent * math.sin(e) - M
+  while abs(delta) > 1E-6:
+    delta = e - eccent * math.sin(e) - m
     e = e - delta / (1 - eccent * math.cos(e))
-  Ec = e;
-  Ec = 2 * math.atan(math.sqrt((1 + eccent) / (1 - eccent)) * math.tan(Ec / 2)) #  True anomaly
+  ec = e
+  ec = 2 * math.atan(math.sqrt((1 + eccent) / (1 - eccent)) * math.tan(ec / 2)) #  True anomaly
 
-  Lambdasun = fixangle(((Ec) * (180.0 / math.pi)) + elongp) # Sun's geocentric ecliptic longitude
-  ml = fixangle(13.1763966 * Day + 64.975464) # Moon's mean lonigitude at the epoch
-  MM = fixangle(ml - 0.1114041 * Day - 349.383063) # 349:  Mean longitude of the perigee at the epoch, Moon's mean anomaly
-  Ev = 1.2739 * math.sin(torad * (2 * (ml - Lambdasun) - MM)) # Evection
-  Ae = 0.1858 * math.sin(M) # Annual equation
-  MmP = torad * (MM + Ev - Ae - (0.37 * math.sin(M))) # Corrected anomaly
-  lP = ml + Ev + (6.2886 * math.sin(MmP)) - Ae + (0.214 * math.sin(2 * MmP)) # Corrected longitude
-  lPP = lP + (0.6583 * math.sin(torad * (2 * (lP - Lambdasun)))) # True longitude
-  MoonAge = lPP - Lambdasun # Age of the Moon in degrees
+  lambdasun = fixangle(((ec) * (180.0 / math.pi)) + elongp) # Sun's geocentric ecliptic longitude
+  ml = fixangle(13.1763966 * day + 64.975464) # Moon's mean lonigitude at the epoch
+  mm = fixangle(ml - 0.1114041 * day - 349.383063) # 349:  Mean longitude of the perigee at the epoch, Moon's mean anomaly
+  ev = 1.2739 * math.sin(torad * (2 * (ml - lambdasun) - mm)) # Evection
+  ae = 0.1858 * math.sin(m) # Annual equation
+  mmp = torad * (mm + ev - ae - (0.37 * math.sin(m))) # Corrected anomaly
+  lp = ml + ev + (6.2886 * math.sin(mmp)) - ae + (0.214 * math.sin(2 * mmp)) # Corrected longitude
+  lpp = lp + (0.6583 * math.sin(torad * (2 * (lp - lambdasun)))) # True longitude
+  moonage = lpp - lambdasun # Age of the Moon in degrees
 
-  return MoonAge * torad
+  return moonage * torad
