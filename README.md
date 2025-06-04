@@ -6,6 +6,7 @@ Systems Level Languages:
 * C/C++
 * Rust
 * Zig
+* Nim
 
 Scripting Languages:
 * Lua
