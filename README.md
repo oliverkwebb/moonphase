@@ -9,6 +9,7 @@ Systems Level Languages:
 * Nim
 
 Scripting Languages:
+* Arturo
 * Lua
 * Janet
 * JavaScript
