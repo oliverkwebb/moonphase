@@ -1,0 +1,81 @@
+#!/usr/bin/env -S arturo -e
+
+moonphase: $[unixDate] [
+    ;; Eccentricity of Earth's orbit
+    eccent: 0.016718
+
+    ;; Ecliptic longitude of the Sun at epoch 1980.0
+    elonge: 278.833540
+
+    ;; Ecliptic longitude of the Sun at perigee
+    elongp: 282.596403
+
+    torad: pi / 180.0
+    fixangle: $[a] [((a % 360.0) + 360.0) % 360.0]
+
+    ;; Calculation of the Sun's position
+    day: (unixDate / 86400.0) + 2440587.5 - 2444238.5  ; Date within epoch
+    
+    M: torad * fixangle ((360.0 / 365.2422) * day) + elonge - elongp  ; Convert from perigee co-ordinates to epoch 1980.0
+
+    ;; Solve equation of Kepler
+    e: M
+    delta: 1
+    while [(abs delta) > 1e-6] [
+        delta: (e - eccent * sin e) - M
+        e: e - delta / 1.0 - eccent * cos e
+    ]
+
+    ;; True anomaly
+    ec: e
+    ec: 2.0 * atan (sqrt (1.0 + eccent) / 1.0 - eccent) * tan ec / 2.0
+
+    ;; Sun's geocentric ecliptic longitude
+    lambdasun: fixangle (ec * 180.0 / pi) + elongp
+
+    ;; Moon's mean lonigitude at the epoch
+    ml: fixangle (13.1763966 * day) + 64.975464
+    
+    ; 349:  Mean longitude of the perigee at the epoch, Moon's mean anomaly 
+    MM: fixangle (ml - 0.1114041 * day) - 349.383063
+
+    ;; Evection
+    Ev: 1.2739 * sin torad * (2.0 * ml - lambdasun) - MM
+
+    ;; Annual equation
+    Ae: 0.1858 * sin M
+
+    ;; Corrected anomaly
+    MmP: torad * (MM + Ev - Ae) - 0.37 * sin M
+
+    ;; Corrected longitude
+    lP: ml + Ev + (6.2886 * sin MmP) - Ae + 0.214 * sin 2.0 * MmP
+
+    ;; True longitude
+    lPP: lP + 0.6583 * sin torad * 2.0 * lP - lambdasun
+
+    ;; Age of the Moon in degrees
+    MoonAge: lPP - lambdasun
+
+    MoonAge * torad
+]
+
+;; === Test ===
+
+illumfrac: $[d] [ 
+    ((1.0 - cos d) / 2.0) * 100.0
+]
+
+testdata: @[
+  @[(neg 178070400) 1.1]
+  @[361411200.0  93.59999999999999]
+  @[1704931200.0 0.3]
+  @[2898374400.0 44.6]
+]
+
+loop testdata 'd [
+  input: d\0 
+  expected: d\1
+  ensure -> expected = round.to: 1 illumfrac moonphase input
+]
+
