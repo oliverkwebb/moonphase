@@ -63,13 +63,54 @@ function phaseindex(ilumfrac, mage)
   else    return (mage > halfmonth) ? 7 : 1;
 }
 
+function mooninfo(date) {
+	let x = {};
+	x.phaseangle = moonphase(date);
+	x.illumfrac = illumfracof(x.phaseangle);
+	x.mage = phaseageof(x.phaseangle);
+	x.maged = Math.floor(x.mage);
+	x.mageh = Math.floor((x.mage % 1)*24);
+	x.idx = phaseindex(x.illumfrac, x.mage);
+	return x;
+}
+
+function toreadablehm(decimaldays) {
+	let days = Math.floor(decimaldays);
+	let hours = Math.floor((decimaldays % 1)*24);
+	return `${days} day${days == 1 ? '' : 's'}, ${hours} hour${hours == 1 ? '' : 's'}`;
+}
+
+	let now = Date.now()/1000;
+	let main = mooninfo(now);
+
+	let weekcast = [];
+	let dates = [];
+	let rangestart = now - 259200; // -3d
+	for (i = 0; i < 7; i++) {
+		let d = new Date(rangestart * 1000);
+		dates[i] = `${d.getMonth()}/${d.getDate()}`;
+		weekcast[i] = mooninfo(rangestart);
+		rangestart += 86400;
+	}
+
+	let tillfullmoon = main.mage;
+	if (main.mage > 14.76529434) {
+		tillfullmoon -= 29.53058868;
+	}
+	tillfullmoon = 14.76529434 - tillfullmoon;
+	
+	let tillnewmoon = 29.53058868 - main.mage;
+
 	let x = document.getElementById("phaseInfoHere");
-	let phaseangle = moonphase(Date.now()/1000);
-	let illumfrac = illumfracof(phaseangle);
-	let mage = phaseageof(phaseangle);
-	let idx = phaseindex(illumfrac, mage);
 	x.innerHTML = `
-	<h1>${emojis[idx]} ${phasenames[idx]} (${(illumfrac*100).toFixed(1)}%)</h1>
+	<h1>${emojis[main.idx]} ${phasenames[main.idx]} (${(main.illumfrac*100).toFixed(1)}%)</h1>
+	<p>Moon is ${toreadablehm(main.mage)} old</p>
+	<hr>
+	<table>
+		<tr>${dates.map((d) => ("<td>" + d + "</td>")).join("")}</tr>
+		<tr style="font-size: 1.5em;"> ${weekcast.map((f) => `<td>${emojis[f.idx]}<br>${(f.illumfrac*100).toFixed(0)}%</td>`).join("")} </tr>
+	</table>
+	<h2>Next full moon in ${toreadablehm(tillfullmoon)} | Next new moon in ${toreadablehm(tillnewmoon)}</h2>
 	`;
 </script>
 <noscript>This is a widget that requires JavaScript to function</noscript>

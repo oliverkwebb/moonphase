@@ -31,21 +31,12 @@ main {
 text-align:center;
 }
 
-
-a {
-text-decoration:none;
-color: var(--uchu-blue-9);
-}
-
-h2 { font-size:1.5em }
 h1 { font-size:3em }
-h1,h2,h3 {
-color: var(--uchu-red-5);
-}
+h2 { font-size:1.5em }
 
 p,li,table,dl {
 line-height:1.5;
-font-size:1.2rem;
+font-size:1.5rem;
 }
 
 table {
@@ -53,32 +44,8 @@ border-collapse: collapse;
 width:100%;
 }
 td,th {
-border-bottom:2px solid;
+border-left:2px solid;
+border-right:2px solid;
 padding:6px;
 }
 th { background-color: var(--uchu-blue-8); }
-
-pre {
-line-height:1.25;
-text-indent:1em;
-}
-pre, code {
-padding: 3px 4px;
-border-radius:4px;
-}
-p code {
-color:white;
-background-color:var(--uchu-yin-9);
-}
-
-img {
-max-width: 100%;
-}
-
-footer p {
-clear:both
-}
-
-#nextprev {width:100%}
-.next {float:right}
-.prev {float:left}
