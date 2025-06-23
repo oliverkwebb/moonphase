@@ -1,7 +1,6 @@
 # Adapted from "moontool.c" by John Walker: See http://www.fourmilab.ch/moontool/
-require 'time'
-
 def moonphase(date)
+  require 'time'
   ud = date.to_i
   eccent = 0.016718 # Eccentricity of Earth's orbit
   elonge = 278.833540 # Ecliptic longitude of the Sun at epoch 1980.0
@@ -35,12 +34,4 @@ def moonphase(date)
   moonage = lpp - lambdasun # Age of the Moon in degrees
 
   moonage * torad
-end
-
-def illuminated_fraction(date)
-  (1 - Math.cos(moonphase(date))) / 2
-end
-
-def illuminated_percent(date)
-  (illuminated_fraction(date) * 100).round(1)
 end
