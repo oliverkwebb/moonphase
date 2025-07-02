@@ -15,6 +15,7 @@ Scripting Languages:
 * JavaScript
 * Python
 * Raku
+* Ruby
 
 DSLs:
 * awk
