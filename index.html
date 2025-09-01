@@ -2,12 +2,58 @@
 <html>
 <head>
 	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>What is the moon phase?</title>
-	<link rel="stylesheet" href="style.css">
+	<style>
+:root {
+--bg: #0f3d99;
+--fg: #e25344;
+}
+/* Jost by Owen Earl */
+@font-face {
+font-family: "Jost";
+font-style: normal;
+src: url("./fonts/Jost-VariableFont_wght.ttf") format("truetype")
+}
+@font-face {
+font-family: "Jost";
+font-style: italic;
+src: url("./fonts/Jost-Italic-VariableFont_wght.ttf") format("truetype")
+}
+
+body {
+background-color:var(--bg);
+color: var(--fg);
+max-width:800px;
+margin:auto;
+font-family: "Jost", sans-serif;
+text-align:center;
+}
+
+h1 { font-size:3em }
+h2 { font-size:1.5em }
+
+p,li,table,dl,form {
+line-height:1.5;
+font-size:1.5rem;
+}
+
+section p {
+width: 100%;
+max-width: 114px; /* 800 / 7 */
+}
+
+	</style>
 </head>
 <body>
 <main id="phaseInfoHere">
 </main>
+<hr>
+<form>
+<label for="date"> Alternatively: </label>
+<input type="date" id="date">
+<button id="refresh">the moon phase for...</button>
+</form>
 <script>
 // Adapted from "moontool.c" by John Walker: See http://www.fourmilab.ch/moontool/
 function moonphase(ud) {
@@ -56,14 +102,15 @@ let emojis_south = ["🌑", "🌘", "🌗", "🌖", "🌕",  "🌔", "🌓", "�
 function phaseindex(ilumfrac, mage)
 {
   let halfmonth = 14.76529434;
-  if      (ilumfrac < 0.04) return 0;
-  else if (ilumfrac > 0.96) return 4;
-  else if (ilumfrac > 0.46 && ilumfrac < 0.54) return (mage > halfmonth) ? 6 : 2;
-  else if (ilumfrac > 0.54 && ilumfrac < 0.96) return (mage > halfmonth) ? 5 : 3;
+  if      (ilumfrac < 0.10) return 0;
+  else if (ilumfrac > 0.90) return 4;
+  else if (ilumfrac > 0.40 && ilumfrac < 0.60) return (mage > halfmonth) ? 6 : 2;
+  else if (ilumfrac > 0.60 && ilumfrac < 0.90) return (mage > halfmonth) ? 5 : 3;
   else    return (mage > halfmonth) ? 7 : 1;
 }
 
 function mooninfo(date) {
+ 	let d = new Date(date * 1000);
 	let x = {};
 	x.phaseangle = moonphase(date);
 	x.illumfrac = illumfracof(x.phaseangle);
@@ -71,6 +118,7 @@ function mooninfo(date) {
 	x.maged = Math.floor(x.mage);
 	x.mageh = Math.floor((x.mage % 1)*24);
 	x.idx = phaseindex(x.illumfrac, x.mage);
+	x.date = `${d.getMonth()+1}/${d.getDate()}`;
 	return x;
 }
 
@@ -80,15 +128,43 @@ function toreadablehm(decimaldays) {
 	return `${days} day${days == 1 ? '' : 's'}, ${hours} hour${hours == 1 ? '' : 's'}`;
 }
 
-	let now = Date.now()/1000;
-	let main = mooninfo(now);
+function givenDate() {
+	let date = (new URLSearchParams(location.search)).get("date");
+	let processedDate = Date.parse(date);
+	if (date == null) {
+		return Date.now()/1000;
+	} else if (isNaN(processedDate)) {
+		alert("Invalid date format. Now using current date");
+		return Date.now()/1000;
+	}
+	else {
+		return processedDate;
+	}
+}
 
+function loadWithNewDate(e) {
+	e.preventDefault();
+	let str = String(document.querySelector('input[type="date"]').value);
+	if (str) {
+		console.log('?date=' + String(document.querySelector('input[type="date"]').value));
+		window.location.search = ('?date=' + str);
+	}
+	else {
+		window.location.search = "";
+	}
+}
+
+	document.getElementById("refresh").addEventListener("click", loadWithNewDate);
+	let now = givenDate();
+	let main = mooninfo(now);
+	let southern = (new URLSearchParams(location.search)).get("south") != null;
+	
 	let weekcast = [];
 	let dates = [];
 	let rangestart = now - 259200; // -3d
 	for (i = 0; i < 7; i++) {
 		let d = new Date(rangestart * 1000);
-		dates[i] = `${d.getMonth()}/${d.getDate()}`;
+		dates[i] = `${d.getMonth()+1}/${d.getDate()}`;
 		weekcast[i] = mooninfo(rangestart);
 		rangestart += 86400;
 	}
@@ -106,11 +182,10 @@ function toreadablehm(decimaldays) {
 	<h1>${emojis[main.idx]} ${phasenames[main.idx]} (${(main.illumfrac*100).toFixed(1)}%)</h1>
 	<p>Moon is ${toreadablehm(main.mage)} old</p>
 	<hr>
-	<table>
-		<tr>${dates.map((d) => ("<td>" + d + "</td>")).join("")}</tr>
-		<tr style="font-size: 1.5em;"> ${weekcast.map((f) => `<td>${emojis[f.idx]}<br>${(f.illumfrac*100).toFixed(0)}%</td>`).join("")} </tr>
-	</table>
-	<h2>Next full moon in ${toreadablehm(tillfullmoon)} | Next new moon in ${toreadablehm(tillnewmoon)}</h2>
+	<section style="display: flex; justify-content: center; flex-wrap: wrap;">
+		${weekcast.map((d) => ("<p><span style='font-size: 2rem'>" + d.date + "</span><br><span style='font-size: 3rem'>" + emojis[d.idx] + "</span><br><span style='font-size:2rem'>" + (d.illumfrac*100).toFixed(0) + "%</span></p>")).join("")}
+	</section>
+	<h2>Next full moon in ${toreadablehm(tillfullmoon)} <br>Next new moon in ${toreadablehm(tillnewmoon)}</h2>
 	`;
 </script>
 <noscript>This is a widget that requires JavaScript to function</noscript>
