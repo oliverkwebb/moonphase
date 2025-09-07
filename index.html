@@ -111,15 +111,15 @@ function phaseindex(ilumfrac, mage)
 
 function mooninfo(date) {
  	let d = new Date(date * 1000);
-	let x = {};
-	x.phaseangle = moonphase(date);
-	x.illumfrac = illumfracof(x.phaseangle);
-	x.mage = phaseageof(x.phaseangle);
-	x.maged = Math.floor(x.mage);
-	x.mageh = Math.floor((x.mage % 1)*24);
-	x.idx = phaseindex(x.illumfrac, x.mage);
-	x.date = `${d.getMonth()+1}/${d.getDate()}`;
-	return x;
+ 	let phaseangle = moonphase(date);
+ 	let mage = phaseageof(phaseangle);
+	return {
+	phaseangle,
+	mage,
+	illumfrac: illumfracof(phaseangle),
+	idx: phaseindex(illumfracof(phaseangle), mage),
+	date: `${d.getMonth()+1}/${d.getDate()}`
+	};
 }
 
 function toreadablehm(decimaldays) {
@@ -155,7 +155,7 @@ function loadWithNewDate(e) {
 }
 
 	document.getElementById("refresh").addEventListener("click", loadWithNewDate);
-	let now = givenDate();
+	let now = givenDate()/1000;
 	let main = mooninfo(now);
 	let southern = (new URLSearchParams(location.search)).get("south") != null;
 	
